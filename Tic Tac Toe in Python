@@ -1,0 +1,162 @@
+cells = ['_', '_', '_', '_', '_', '_', '_', '_', '_']
+board = ("---------" + "\n| " + cells[0] + " " + cells[1] + " " + cells[2] + " | \n| " + cells[3]
+             + " " + cells[4] + " " + cells[5] + " | \n| " + cells[6] + " " + cells[7]
+             + " " + cells[8] + " |" + "\n---------")
+last_coord = ''
+
+X_list = []
+O_list = []
+for cell in cells:
+    if cell == 'X':
+        X_list += cell
+    elif cell == 'O':
+        O_list += cell
+        
+X = ['X', 'X', 'X']
+O = ['O', 'O', 'O']
+Xtriple_list = []
+Otriple_list = []
+triple_list = cells[0:3], cells[3:6], cells[6:], [cells[0], cells[3], cells[6]], [cells[1], cells[4], cells[7]], [cells[2], cells[5], cells[8]], [cells[0], cells[4], cells[8]], [cells[2], cells[4], cells[6]]
+for triple in triple_list:
+    if triple == X:
+        Xtriple_list += triple
+    elif triple == O:
+        Otriple_list += triple
+
+def gameStateCheck():
+    if len(X_list) - len(O_list) != 1 and len(X_list) - len(O_list) != 0 and len(X_list) - len(O_list) != -1:
+        return "Impossible"
+
+    elif len(Xtriple_list) + len(Otriple_list) >= 6:
+        return "Impossible"
+
+    else:
+        for cell in cells:
+            if cell == "_":
+                if cells[0:3] != X  and cells[0:3] != O and \
+                    cells[3:6] != X and cells[3:6] != O and \
+                    cells[6:] != X and cells[6:] != O and \
+                    [cells[0], cells[3], cells[6]] != X and [cells[0], cells[3], cells[6]] != O and \
+                    [cells[1], cells[4], cells[7]] != X and [cells[1], cells[4], cells[7]] != O and \
+                    [cells[2], cells[5], cells[8]] != X and [cells[2], cells[5], cells[8]] != O and \
+                    [cells[0], cells[4], cells[8]] != X and [cells[0], cells[4], cells[8]] != O and \
+                    [cells[2], cells[4], cells[6]] != X and [cells[2], cells[4], cells[6]] != O:
+                        return "Game not finished"
+
+
+        if cells[0:3] == X or \
+            cells[3:6] == X or \
+            cells[6:] == X or \
+            [cells[0], cells[3], cells[6]] == X or \
+            [cells[1], cells[4], cells[7]] == X or \
+            [cells[2], cells[5], cells[8]] == X or \
+            [cells[0], cells[4], cells[8]] == X or \
+            [cells[2], cells[4], cells[6]] == X:
+              return "X wins"
+
+        elif cells[0:3] == O or \
+            cells[3:6] == O or \
+            cells[6:] == O or \
+            [cells[0], cells[3], cells[6]] == O or \
+            [cells[1], cells[4], cells[7]] == O or \
+            [cells[2], cells[5], cells[8]] == O or \
+            [cells[0], cells[4], cells[8]] == O or \
+            [cells[2], cells[4], cells[6]] == O:
+              return "O wins"   
+        else:
+            return "Draw"
+
+def coord_convert():
+    global coords
+    if coords == "1 3":
+        coords = 0
+    if coords == "2 3":
+        coords = 1
+    if coords == "3 3":
+        coords = 2
+    if coords == "1 2":
+        coords = 3
+    if coords == "2 2":
+        coords = 4
+    if coords == "3 2":
+        coords = 5
+    if coords == "1 1":
+        coords = 6
+    if coords == "2 1":
+        coords = 7
+    if coords == "3 1":
+        coords = 8
+        
+def number_check():
+    global coords
+    try:
+        coordsint
+    except UnboundLocalError:
+        coordsint = coords.split()
+    for i in range(0, len(coordsint)):
+        try:
+            coordsint[i] = int(coordsint[i])
+        except ValueError:
+            print("You should enter numbers!")
+            coords = str(input("Enter the coordinates: "))
+            coordsint = coords.split()
+            number_check()
+            range_check()
+            empty_check()
+            
+def empty_check():
+    global coords
+    coord_convert()
+    while cells[coords] != "_":
+        print("This cell is occupied! Choose another one!")
+        coords = str(input("Enter the coordinates: "))
+        number_check()
+        range_check()
+        empty_check()
+        coord_convert()
+        
+def range_check():
+    global coords
+    coordsint = list(coords)
+    for i in range(0, len(coordsint)):
+        if coordsint[i] != " ": 
+            coordsint[i] = int(coordsint[i])
+    for item in coordsint:
+        if type(item) == int:
+            if item > 3:
+                print("Coordinates should be from 1 to 3!")
+                coords = str(input("Enter the coordinates: "))
+                number_check()
+                range_check()
+                empty_check()
+                break
+
+def replace(coords):
+    global board
+    global last_coord
+    if last_coord != "X":
+        cells[coords] = "X"
+        last_coord = "X"
+        print(last_coord)
+    else:
+        cells[coords] = "O"
+        last_coord = "O"
+    board = ("---------" + "\n| " + cells[0] + " " + cells[1] + " " + cells[2] + " | \n| " + cells[3]
+             + " " + cells[4] + " " + cells[5] + " | \n| " + cells[6] + " " + cells[7]
+             + " " + cells[8] + " |" + "\n---------")
+    print(board)
+    
+def inputLoop():
+    global coords
+    print(board)
+    while gameStateCheck() == "Game not finished":
+        coords = str(input("Enter the coordinates: "))
+        number_check()
+        range_check()
+        empty_check()
+        replace(coords)
+
+    if gameStateCheck() != "Game not finished":
+        print(gameStateCheck())
+
+inputLoop()
